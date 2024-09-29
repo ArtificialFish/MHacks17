@@ -1,6 +1,5 @@
-MONGO_URI = "mongodb+srv://ambbrown:jFbMJWFY62O62IwO@cluster0.h4lpo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+MONGO_URI = "mongodb+srv://yangalan114:headers1%2A@cluster0.ub2gb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
-SENDER_EMAIL = "mabrown8888@gmail.com"
-SENDER_PASSWORD = "lfhn wrdf zwvz anzu"
-
+SENDER_EMAIL = "yangalan114@gmail.com"
+SENDER_PASSWORD = "nmklop"
