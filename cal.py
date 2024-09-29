@@ -4,6 +4,15 @@ from matching import find_match
 from datetime import datetime, timedelta
 import random
 from streamlit_calendar import calendar
+import os
+import subprocess
+import sys
+#import urllib.request as urllib2
+
+import urllib.request
+import urllib.parse
+import requests
+
 
 st.title("✨ Random MeetUp Matcher")
 # st.write(
@@ -86,6 +95,26 @@ if st.button("Schedule Meeting"):
 
 st.write(events)
 
+# Sending Daily Match Emails:
+if st.button("Daily Match"):
+    url = 'https://magicloops.dev/api/loop/run/f9d69808-e28c-44b1-b8d1-dc003f263333'
+    payload = { 'match_name': 'Johnny',
+                'match_preferred_pron': 'They/Their',
+                'match_mood_today': 'hyped',
+                'match_personality': 'ESTP',
+                'match_hobbies': 'creative writing',
+                'match_education' : 'college',
+                'user_name': 'Wendy',
+                'user_preferred_pron': 'She/Her',
+                'user_mood_today': 'sad',
+                'user_personality': 'ISFJ',
+                'user_hobbies': 'reading novels',
+                'user_education' : 'college',
+              }
+    response = requests.get(url, json=payload)
+    responseJson = response.json()
+    st.write("Email sent")
+    
 state = calendar(
     events=st.session_state.get("events", events),
     options=calendar_options,
