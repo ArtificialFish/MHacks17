@@ -7,9 +7,6 @@ from streamlit_calendar import calendar
 import os
 import subprocess
 import sys
-
-# import urllib.request as urllib2
-
 import urllib.request
 import urllib.parse
 import requests
@@ -19,19 +16,6 @@ st.title("✨ Random MeetUp Matcher")
 # st.write(
 #     f"Welcome, {st.session_state['user_name']}! Input your **worries** and **current mood** to be matched with others."
 # )
-
-mode = "list"
-calendar_resources = []
-events = []
-
-calendar_options = {
-    "editable": "true",
-    "navLinks": "true",
-    "resources": calendar_resources,
-    "selectable": "true",
-    "initialDate": f"{datetime.now().strftime('%Y-%m-%d')}",
-    "initialView": "listMonth",
-}
 
 # User input form for worries and mood
 with st.form("user_input"):
@@ -54,6 +38,27 @@ if submit_button:
     else:
         st.warning("Please fill in all the fields.")
 
+# Sending Daily Match Emails:
+if st.button("Daily Match"):
+    url = "https://magicloops.dev/api/loop/run/f9d69808-e28c-44b1-b8d1-dc003f263333"
+    payload = {
+        "match_name": "Johnny",
+        "match_preferred_pron": "They/Their",
+        "match_mood_today": "hyped",
+        "match_personality": "ESTP",
+        "match_hobbies": "creative writing",
+        "match_education": "college",
+        "user_name": "Wendy",
+        "user_preferred_pron": "She/Her",
+        "user_mood_today": "sad",
+        "user_personality": "ISFJ",
+        "user_hobbies": "reading novels",
+        "user_education": "college",
+    }
+    response = requests.get(url, json=payload)
+    responseJson = response.json()
+    st.write("Email sent")
+
 # Add matching process using the `find_match` function
 # if st.button("Find Someone to Talk to"):
 #     matched_user = find_match(users_collection)
@@ -65,9 +70,61 @@ if submit_button:
 #             f"They're feeling **{matched_user['mood']}** and worried about: **{matched_user['worries']}**"
 #         )
 
-placeholder = st.empty()
+# mode = "list"
+calendar_resources = []
+cal_events = [
+    {
+        "title": "Meeting - Anxious",
+        "color": "#FF6C6C",
+        "start": "2024-09-29",
+        "end": "2024-09-29",
+        "resourceId": "a",
+    },
+    {
+        "title": "Meeting - Happy",
+        "color": "#FF6C6C",
+        "start": "2024-09-30",
+        "end": "2024-09-30",
+        "resourceId": "a",
+    },
+    {
+        "title": "Meeting - Anxious",
+        "color": "#FF6C6C",
+        "start": "2024-10-03",
+        "end": "2024-10-03",
+        "resourceId": "a",
+    },
+]
+
+calendar_options = {
+    "editable": "true",
+    "navLinks": "true",
+    "resources": calendar_resources,
+    "selectable": "true",
+    "initialDate": f"{datetime.now().strftime('%Y-%m-%d')}",
+    "initialView": "listMonth",
+}
 
 count = 1
+
+cal = calendar(
+    events=cal_events,
+    options=calendar_options,
+    custom_css="""
+    .fc-event-past {
+        opacity: 0.8;
+    }
+    .fc-event-time {
+        font-style: italic;
+    }
+    .fc-event-title {
+        font-weight: 700;
+    }
+    .fc-toolbar-title {
+        font-size: 2rem;
+    }
+    """,
+)
 
 # Meeting scheduling button and logic
 if st.button("Schedule Meeting"):
@@ -92,45 +149,9 @@ if st.button("Schedule Meeting"):
 
     count += 1
 
-    events.append(event)
+    cal_events.append(event)
 
-# Sending Daily Match Emails:
-if st.button("Daily Match"):
-    url = "https://magicloops.dev/api/loop/run/f9d69808-e28c-44b1-b8d1-dc003f263333"
-    payload = {
-        "match_name": "Johnny",
-        "match_preferred_pron": "They/Their",
-        "match_mood_today": "hyped",
-        "match_personality": "ESTP",
-        "match_hobbies": "creative writing",
-        "match_education": "college",
-        "user_name": "Wendy",
-        "user_preferred_pron": "She/Her",
-        "user_mood_today": "sad",
-        "user_personality": "ISFJ",
-        "user_hobbies": "reading novels",
-        "user_education": "college",
-    }
-    response = requests.get(url, json=payload)
-    responseJson = response.json()
-    st.write("Email sent")
-
-state = calendar(
-    events=st.session_state.get("events", events),
-    options=calendar_options,
-    custom_css="""
-    .fc-event-past {
-        opacity: 0.8;
-    }
-    .fc-event-time {
-        font-style: italic;
-    }
-    .fc-event-title {
-        font-weight: 700;
-    }
-    .fc-toolbar-title {
-        font-size: 2rem;
-    }
-    """,
-    key=mode,
-)
+    # Does not modify the actual calendar.
+    # Likely need to store events outside of program (MongoDB, etc)
+    # so the events can be pulled everytime the page is reloaded.
+    cal["events"] = cal_events
